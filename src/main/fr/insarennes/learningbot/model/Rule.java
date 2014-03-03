@@ -1,5 +1,5 @@
 package fr.insarennes.learningbot.model;
 
-public class Rule {
+public class Rule extends DecisionTreeNode {
 
 }
