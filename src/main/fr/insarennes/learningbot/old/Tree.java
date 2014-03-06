@@ -27,7 +27,7 @@ public class Tree {
 		try {
 			// Creation of a new JDOM document with the XML file as argument 
 			// Parsing is over ;)
-			doc = sxb.build(new File("/home/adrien/Documents/INSA 3/Projets/2013-2014 Études pratiques/Code/LearningBot/bin/bonzai/"+name + ".tree.xml"));
+			doc = sxb.build(new File("/home/adrien/Documents/INSA%203/Projets/2013-2014%20Études%20pratiques/Code/LearningBot/bin/bonzai/"+name + ".tree.xml"));
 			// Initialisation of a new root element with the root element of the document
 			root = doc.getRootElement().getChild("tree").getChild("node");
 		} catch (Exception e) {
