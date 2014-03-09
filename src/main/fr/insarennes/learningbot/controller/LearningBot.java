@@ -12,6 +12,9 @@ import robocode.ScannedRobotEvent;
 import fr.insarennes.learningbot.model.DecisionTree;
 import fr.insarennes.learningbot.model.LearnedData;
 
+/**
+ * Currently working only on Linux FIXME
+ */
 public class LearningBot extends Thorn {
 //CONSTANTS
 	/** The file which contains the decision tree **/
