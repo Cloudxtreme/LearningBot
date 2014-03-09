@@ -26,7 +26,7 @@ public class LearnedData {
 	 * @param e The event to save
 	 */
 	public LearnedData(LearningBot b, ScannedRobotEvent e) {
-		if(properties == null) {
+		if(properties == null) { 
 			initProperties();
 		}
 		data = new HashMap<BonzaiProperty,String>();
