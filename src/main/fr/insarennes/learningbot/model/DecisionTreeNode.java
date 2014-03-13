@@ -67,8 +67,6 @@ public abstract class DecisionTreeNode {
 	
 //OTHER METHODS
 	/**
-	 * FIXME Shouldn't there be the opponent in the parameters ? Some decisions may rely on it.
-	 *  
 	 * Looks at the tree and returns the decision to take in function of the current context.
 	 * @param robot The current robot
 	 * @return The decision to take

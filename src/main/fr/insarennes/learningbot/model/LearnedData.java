@@ -9,8 +9,8 @@ import fr.insarennes.learningbot.controller.LearningBot;
 
 /**
  * This class saves data from {@link ScannedRobotEvent}, in order to keep it and save it later.
- * This data will be used to create decision trees. The robot gathers a new data every time the ennemy is detected
- * A "LearnedData" is a set of different characteristics we consider interersting 
+ * This data will be used to create decision trees. The robot gathers a new data every time the enemy is detected
+ * A "LearnedData" is a set of different characteristics we consider interesting
  * and to which is given the recorded value. E.g : distance_between_robots=10  energy=50
  */
 public class LearnedData {
