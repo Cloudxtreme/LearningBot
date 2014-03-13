@@ -32,8 +32,8 @@ public class DecisionTree {
 	
 //OTHER METHODS
 	/**
-	 * Do we might shot other competitor, regarding to combat context ?
-	 * @param robot The current robot
+	 * Should we shoot at the other competitor, regarding combat context ?
+	 * @param robot The current robot, the one wondering if it should fire.
 	 * @return True if yes, False if no
 	 */
 	public boolean doWeShoot(LearningBot robot) {
