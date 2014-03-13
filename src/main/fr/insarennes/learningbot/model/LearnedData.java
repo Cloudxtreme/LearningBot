@@ -9,7 +9,9 @@ import fr.insarennes.learningbot.controller.LearningBot;
 
 /**
  * This class saves data from {@link ScannedRobotEvent}, in order to keep it and save it later.
- * This data will be used to create decision trees.
+ * This data will be used to create decision trees. The robot gathers a new data every time the ennemy is detected
+ * A "LearnedData" is a set of different characteristics we consider interersting 
+ * and to which is given the recorded value. E.g : distance_between_robots=10  energy=50
  */
 public class LearnedData {
 //CLASS ATTRIBUTES
@@ -30,12 +32,12 @@ public class LearnedData {
 			initProperties();
 		}
 		data = new HashMap<BonzaiProperty,String>();
-		data.put(properties.get("op_bearing"), String.valueOf(e.getBearing()));
+		data.put(properties.get("op_bearing"), String.valueOf(e.getBearing())); // not sure if useful
 		data.put(properties.get("op_distance"), String.valueOf(e.getDistance()));
 		data.put(properties.get("op_energy"), String.valueOf(e.getEnergy()));
 //		data.put(properties.get("op_heading"), String.valueOf(e.getHeading()));
-		data.put(properties.get("op_name"), String.valueOf(e.getName()));
-//		data.put(properties.get("op_velocity"), String.valueOf(e.getVelocity()));
+//		data.put(properties.get("op_name"), String.valueOf(e.getName()));
+		data.put(properties.get("op_velocity"), String.valueOf(e.getVelocity()));
 //		data.put(properties.get("my_distremain"), String.valueOf(b.getDistanceRemaining()));
 		data.put(properties.get("my_energy"), String.valueOf(b.getEnergy()));
 //		data.put(properties.get("my_gunheading"), String.valueOf(b.getGunHeading()));
@@ -67,15 +69,20 @@ public class LearnedData {
 
 //OTHER METHODS
 	/**
-	 * Initializes the properties which can be used
+	 * Initializes the properties which CAN be used
 	 */
 	private void initProperties() {
 		properties = new HashMap<String,BonzaiProperty>();
 		properties.put("op_bearing", new BonzaiProperty(BonzaiProperty.INPUT_CONTINUOUS, "op_bearing"));
 		properties.put("op_distance", new BonzaiProperty(BonzaiProperty.INPUT_CONTINUOUS, "op_distance"));
 		properties.put("op_energy", new BonzaiProperty(BonzaiProperty.INPUT_CONTINUOUS, "op_energy"));
-		properties.put("op_name", new BonzaiProperty(BonzaiProperty.INPUT_TEXT, "op_name"));
+		properties.put("op_name", new BonzaiProperty(BonzaiProperty.INPUT_TEXT, "op_name")); 	// probably not really relevant, but, eh
+		properties.put("op_velocity", new BonzaiProperty(BonzaiProperty.INPUT_CONTINUOUS, "op_velocity"));
 		properties.put("my_energy", new BonzaiProperty(BonzaiProperty.INPUT_CONTINUOUS, "my_energy"));
+		properties.put("op_heading", new BonzaiProperty(BonzaiProperty.INPUT_CONTINUOUS, "op_heading"));
+		properties.put("my_distremain", new BonzaiProperty(BonzaiProperty.INPUT_CONTINUOUS, "my_distremain"));
+		properties.put("my_gunheading", new BonzaiProperty(BonzaiProperty.INPUT_CONTINUOUS, "my_gunheading"));
+		properties.put("my_gunheat", new BonzaiProperty(BonzaiProperty.INPUT_CONTINUOUS, "my_gunheat"));
 		properties.put("shoot", new BonzaiProperty(BonzaiProperty.CLASS_LABEL, "shoot"));
 		properties.get("shoot").addValue("shoot");
 		properties.get("shoot").addValue("not_shoot");
