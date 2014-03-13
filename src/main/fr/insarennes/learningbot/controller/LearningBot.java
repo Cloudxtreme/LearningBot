@@ -1,9 +1,11 @@
 package fr.insarennes.learningbot.controller;
 
-import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
 
 import kc.micro.Thorn;
 import robocode.BattleEndedEvent;
@@ -15,12 +17,11 @@ import fr.insarennes.learningbot.model.LearnedData;
 /**
  * A robot based on an existing one, however this one will improve itself over time,
  * by building and following a decision tree.
- * Currently working only on Linux FIXME
  */
 public class LearningBot extends Thorn {
 //CONSTANTS
 	/** The file which contains the decision tree **/
-	private static final String PATH_TREE = "/tmp/tree.xml";
+	private static final String TREE_FILE = "learningbot.tree.xml";
 	/** The default bullet power **/
 	private static final double BULLET_POWER = 12; //FIXME May not be the most appropriate value.
 	
@@ -36,16 +37,15 @@ public class LearningBot extends Thorn {
 	 */
 	public LearningBot() {
 		super();
-		
-		//Load tree if needed
-		if(tree == null) {
-			DecisionTreeParser dtp = new DecisionTreeParser();
-			tree = dtp.parse(new File(PATH_TREE));
-		}
 	}
 
 //ACCESSORS
-	
+	/**
+	 * @return The last saved data, or null if no data
+	 */
+	public LearnedData getLastData() {
+		return (knowledge.size() > 0) ? knowledge.get(knowledge.size()-1) : null;
+	}
 //MODIFIERS
 	
 //OTHER METHODS
@@ -53,12 +53,9 @@ public class LearningBot extends Thorn {
 	 * This method is launched when a battle starts
 	 */
 	public void run() {
-		if(tree == null) {
-			super.run();
-		}
-		else {
-			//TODO
-		}
+		loadTree();
+		
+		super.run();
 	}
 	
 	/**
@@ -70,12 +67,13 @@ public class LearningBot extends Thorn {
 			super.onScannedRobot(e);
 		}
 		else {
-			//TODO
 			//Decision for shoot
-			if(tree.doWeShot(this)) {
+			if(tree.doWeShoot(this)) {
 				fireBullet(BULLET_POWER);
+				System.err.println("Proudly fired with BonzaiBoost (c)");
 			}
-			//Decision for movement
+			
+			//TODO Decision for movement
 		}
 	}
 	
@@ -86,14 +84,33 @@ public class LearningBot extends Thorn {
 	
 	public void onBattleEnded(BattleEndedEvent e) {
 		//Save data in filesystem
-		LearnedDataWriter ldw = new LearnedDataWriter();
-		try {
-			ldw.write(knowledge, getDataFile("learningbot.data"), getDataFile("learningbot.names"));
-		} catch (IOException e1) {
-			e1.printStackTrace();
-			System.err.println("Failed to save collected data.");
+		if(knowledge.size() > 0) {
+			LearnedDataWriter ldw = new LearnedDataWriter();
+			try {
+				ldw.write(knowledge, getDataFile("learningbot.data"), getDataFile("learningbot.names"));
+			} catch (IOException e1) {
+				e1.printStackTrace();
+				System.err.println("Failed to save collected data.");
+			}
+		} else {
+			System.err.println("No data to save.");
 		}
 		
 		super.onBattleEnded(e);
+	}
+	
+	/**
+	 * Tries to load tree from XML file
+	 */
+	private void loadTree() {
+		//Load tree if needed
+		if(tree == null) {
+			DecisionTreeParser dtp = new DecisionTreeParser();
+			try {
+				tree = dtp.parse(getDataFile(TREE_FILE));
+			} catch (FileNotFoundException | XMLStreamException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }

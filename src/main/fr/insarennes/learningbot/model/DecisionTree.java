@@ -22,15 +22,23 @@ public class DecisionTree {
 		root = r;
 	}
 
+//ACCESSORS
+	/**
+	 * @return The tree root
+	 */
+	public DecisionTreeNode getRoot() {
+		return root;
+	}
+	
 //OTHER METHODS
 	/**
 	 * Do we might shot other competitor, regarding to combat context ?
 	 * @param robot The current robot
 	 * @return True if yes, False if no
 	 */
-	public boolean doWeShot(LearningBot robot) {
-		//TODO Call decisionToTake and return the answer as a boolean
+	public boolean doWeShoot(LearningBot robot) {
 		Decision d = root.decisionToTake(robot);
-		return false;
+		
+		return d.getPopulation("shoot") > d.getPopulation("not_shoot");
 	}
 }

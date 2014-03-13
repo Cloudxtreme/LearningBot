@@ -33,6 +33,21 @@ public abstract class DecisionTreeNode {
 		rightSon = null;
 	}
 
+//ACCESSORS
+	/**
+	 * @return the left son
+	 */
+	public DecisionTreeNode getLeftSon() {
+		return leftSon;
+	}
+
+	/**
+	 * @return the right son
+	 */
+	public DecisionTreeNode getRightSon() {
+		return rightSon;
+	}
+
 //MODIFIERS
 	/**
 	 * Defines the left son of this node

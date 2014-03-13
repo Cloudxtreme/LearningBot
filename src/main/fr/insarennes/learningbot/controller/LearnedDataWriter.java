@@ -75,7 +75,7 @@ public class LearnedDataWriter {
 				}
 			}
 			
-			//Write labels
+			//Write labels data
 			datasContent += ",";
 			for(BonzaiProperty bp : classLabels) {
 				datasContent += " "+ld.getValue(bp);

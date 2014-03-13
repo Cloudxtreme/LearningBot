@@ -59,6 +59,15 @@ public class LearnedData {
 	public String getValue(BonzaiProperty prop) {
 		return data.get(prop);
 	}
+	
+	/**
+	 * Get the value associated to the given property
+	 * @param prop The property
+	 * @return The value, or null if the property isn't contained in data
+	 */
+	public String getValue(String prop) {
+		return data.get(properties.get(prop));
+	}
 
 //MODIFIERS
 	public void setShootSuccesfull() {
