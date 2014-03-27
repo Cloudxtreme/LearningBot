@@ -87,6 +87,13 @@ public class BonzaiProperty {
 		return type;
 	}
 	
+	/**
+	 * @return The property name
+	 */
+	public String getName() {
+		return name;
+	}
+	
 //MODIFIERS
 	/**
 	 * Adds a new value to the property

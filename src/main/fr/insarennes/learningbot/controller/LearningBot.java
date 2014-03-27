@@ -1,5 +1,6 @@
 package fr.insarennes.learningbot.controller;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -10,6 +11,10 @@ import javax.xml.stream.XMLStreamException;
 import kc.micro.Thorn;
 import robocode.BattleEndedEvent;
 import robocode.BulletHitEvent;
+import robocode.BulletMissedEvent;
+import robocode.HitByBulletEvent;
+import robocode.HitRobotEvent;
+import robocode.HitWallEvent;
 import robocode.ScannedRobotEvent;
 import fr.insarennes.learningbot.model.DecisionTree;
 import fr.insarennes.learningbot.model.LearnedData;
@@ -46,6 +51,7 @@ public class LearningBot extends Thorn {
 	public LearnedData getLastData() {
 		return (knowledge.size() > 0) ? knowledge.get(knowledge.size()-1) : null;
 	}
+	
 //MODIFIERS
 	
 //OTHER METHODS
@@ -73,13 +79,82 @@ public class LearningBot extends Thorn {
 				System.err.println("Proudly fired with BonzaiBoost (c)");
 			}
 			
-			//TODO Decision for movement
+			//Decision for direction
+			String direction = tree.whereDoWeGo(this);
+			switch(direction) {
+				case "forward":
+				case "stay":
+				case "backward":
+					break;
+				case "left":
+					setTurnLeft(90);
+					break;
+				case "right":
+					setTurnRight(90);
+					break;
+			}
+			
+			//Decision for gun direction
+			String gunDirection = tree.whatGunOrientation(this);
+			switch(gunDirection) {
+				case "front":
+					break;
+				case "back":
+					setTurnGunLeft(180);
+					break;
+				case "left":
+					setTurnGunLeft(90);
+					break;
+				case "right":
+					setTurnGunRight(90);
+					break;
+			}
+			
+			execute();
+			
+			//Hardcoded speed
+			if(!direction.equals("stay")) {
+				double distance = 30;
+				if(direction.equals("backward")) {
+					setBack(distance);
+				} else {
+					setAhead(distance);
+				}
+			}
 		}
 	}
 	
 	public void onBulletHit(BulletHitEvent e) {
 		super.onBulletHit(e);
 		knowledge.get(knowledge.size()-1).setShootSuccesfull();
+	}
+	
+	public void onBulletMissed(BulletMissedEvent e) {
+		if(tree == null) {
+			super.onBulletMissed(e);
+		}
+		setLastGunDirectionWrong();
+	}
+	
+	public void onHitWall(HitWallEvent e) {
+		if(tree == null) {
+			super.onHitWall(e);
+		}
+		setLastDirectionWrong();
+	}
+	
+	public void onHitRobot(HitRobotEvent e) {
+		if(tree == null) {
+			super.onHitRobot(e);
+		}
+		setLastDirectionWrong();
+	}
+	
+	public void onHitByBullet(HitByBulletEvent e) {
+		if(tree == null) {
+			super.onHitByBullet(e);
+		}
+		setLastDirectionWrong();
 	}
 	
 	public void onBattleEnded(BattleEndedEvent e) {
@@ -107,10 +182,67 @@ public class LearningBot extends Thorn {
 		if(tree == null) {
 			DecisionTreeParser dtp = new DecisionTreeParser();
 			try {
-				tree = dtp.parse(getDataFile(TREE_FILE));
+				File treeXml = getDataFile(TREE_FILE);
+				if(treeXml.length() > 0) {
+					tree = dtp.parse(treeXml);
+				} else {
+					//Delete the file created by getDataFile
+					treeXml.delete();
+				}
 			} catch (FileNotFoundException | XMLStreamException e) {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	/**
+	 * Sets the last used direction as wrong in data
+	 */
+	private void setLastDirectionWrong() {
+		String oppositeDirection;
+		switch(knowledge.get(knowledge.size()-1).getValue("direction")) {
+			case "forward":
+				oppositeDirection = "backward";
+				break;
+			case "backward":
+				oppositeDirection = "forward";
+				break;
+			case "stay":
+				oppositeDirection = "forward";
+				break;
+			case "left":
+				oppositeDirection = "right";
+				break;
+			case "right":
+				oppositeDirection = "left";
+				break;
+			default:
+				oppositeDirection = "backward";
+		}
+		knowledge.get(knowledge.size()-1).setDirection(oppositeDirection);
+	}
+	
+	/**
+	 * Sets the last used direction for gun as wrong in data
+	 */
+	private void setLastGunDirectionWrong() {
+		String oppositeDirection;
+		switch(knowledge.get(knowledge.size()-1).getValue("gundirection")) {
+			case "front":
+				oppositeDirection = "back";
+				break;
+			case "back":
+				oppositeDirection = "front";
+				break;
+			case "left":
+				oppositeDirection = "right";
+				break;
+			case "right":
+				oppositeDirection = "left";
+				break;
+			default:
+				oppositeDirection = "back";
+		}
+		knowledge.get(knowledge.size()-1).setGunDirection(oppositeDirection);
 	}
 }
