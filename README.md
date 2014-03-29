@@ -20,3 +20,5 @@ Decision tree creation
 ----------------------
 
 Execute *bonzaiboost -S learningbot*, you can add the *-jobs n* option, were n is the amount of parallel tasks.
+
+To avoid errors caused by "null" values in first line in the data file, run the command *sed -i 's/null null null/not_shoot stay front/g' learningbot.data*.

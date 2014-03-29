@@ -3,6 +3,7 @@ package fr.insarennes.learningbot.controller;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -11,6 +12,12 @@ import fr.insarennes.learningbot.model.BonzaiProperty;
 import fr.insarennes.learningbot.model.LearnedData;
 
 public class LearnedDataWriter {
+//CONSTANTS
+	/** The properties which should not be written in text file **/
+	private static String[] IGNORE_PROPS = { /*"my_x", "my_y", "my_gunheading"*/ };
+	/** The properties which should not be written in text file, as a list **/
+	private static List<String> IGNORE_PROPS_LIST = Arrays.asList(IGNORE_PROPS);
+
 //OTHER METHODS
 	/**
 	 * Saves a lot of data in a file
@@ -35,22 +42,31 @@ public class LearnedDataWriter {
 		
 		Set<BonzaiProperty> properties = data.get(0).getProperties();
 		
+		//Remove ignored properties
+		List<BonzaiProperty> toRemove = new ArrayList<BonzaiProperty>();
+		for(BonzaiProperty bp : properties) {
+			if(IGNORE_PROPS_LIST.contains(bp.getName())) {
+				toRemove.add(bp);
+			}
+		}
+		properties.removeAll(toRemove);
+		
 		/*
 		 * .names file
 		 */
 		//Get properties
-		String namesLabels = "";
+		StringBuilder namesLabels = new StringBuilder();
 		boolean firstLabel = true;
-		String namesProps = "";
+		StringBuilder namesProps = new StringBuilder();
 		List<BonzaiProperty> classLabels = new ArrayList<BonzaiProperty>();
 		for(BonzaiProperty bp : properties) {
 			if(bp.getType() == BonzaiProperty.CLASS_LABEL) {
-				if(!firstLabel) { namesLabels += ", "; }
+				if(!firstLabel) { namesLabels.append(", "); }
 				else { firstLabel = false; }
-				namesLabels += bp.toString();
+				namesLabels.append(bp.toString());
 				classLabels.add(bp);
 			} else {
-				namesProps += bp.toString() + "\n"; 
+				namesProps.append(bp.toString() + "\n"); 
 			}
 		}
 		
@@ -60,30 +76,31 @@ public class LearnedDataWriter {
 		/*
 		 * .data file
 		 */
-		String datasContent = "";
+		StringBuilder datasContent = new StringBuilder(50 * data.size());
 		properties.removeAll(classLabels);
 		for(LearnedData ld : data) {
 			//Write properties
 			boolean first = true;
 			for(BonzaiProperty bp : properties) {
-				if(!first) { datasContent += ", "; }
+				if(!first) { datasContent.append(", "); }
 				else { first = false; }
 				
 				String current = ld.getValue(bp);
 				if(current != null) {
-					datasContent += current;
+					datasContent.append(current);
 				}
 			}
 			
 			//Write labels data
-			datasContent += ",";
+			datasContent.append(",");
 			for(BonzaiProperty bp : classLabels) {
-				datasContent += " "+ld.getValue(bp);
+				datasContent.append(" "+ld.getValue(bp));
 			}
-			datasContent += ".\n";
+			datasContent.append(".\n");
 		}
+		
 		//Write .data file
-		writeTextFile(datas, datasContent);
+		writeTextFile(datas, datasContent.toString());
 	}
 	
 	/**
