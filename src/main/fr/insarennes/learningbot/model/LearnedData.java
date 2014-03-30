@@ -31,6 +31,7 @@ public class LearnedData {
 		if(properties == null) { 
 			initProperties();
 		}
+
 		data = new HashMap<BonzaiProperty,String>();
 		data.put(properties.get("op_bearing"), String.valueOf(e.getBearing())); // not sure if useful
 		data.put(properties.get("op_distance"), String.valueOf(e.getDistance()));
@@ -87,7 +88,7 @@ public class LearnedData {
 	}
 
 //MODIFIERS
-	public void setShootSuccesfull() {
+	public void setShootSuccesful() {
 		data.put(properties.get("shoot"), "shoot");
 	}
 	
@@ -141,7 +142,6 @@ public class LearnedData {
 	 */
 	private String calculateDirection(LearnedData ld) {
 		String result;
-		
 		if(ld == null) {
 			result = "stay";
 		} else {
@@ -158,12 +158,15 @@ public class LearnedData {
 			//Calculate the robot relative rotation
 			double relativeRobotHeading = movementHeading-lastHeading;
 			if(relativeRobotHeading >= 45 && relativeRobotHeading < 135) {
+	System.err.println("\nLE BOT TOURNE A DROITE !\n");//FIXME
+
 				result = "right";
 			}
 			else if(relativeRobotHeading >= 135 && relativeRobotHeading < 225) {
 				result = "backward"; 
 			}
 			else if(relativeRobotHeading >= 225 && relativeRobotHeading < 315) {
+	System.err.println("\nLE BOT TOURNE A GAUCHE !\n");//FIXME
 				result = "left";
 			}
 			else {

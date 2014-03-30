@@ -3,7 +3,10 @@ package fr.insarennes.learningbot.model;
 import fr.insarennes.learningbot.controller.LearningBot;
 
 /**
- * FIXME javadoc, javadoc everywhere !
+ * A non-leaf node in the DecisionTree. Its sons are either other Rules or {@link Decision}.
+ * A Rule is a like a question about a characteristic of the robot environment (e.g HP, distance to opponent)
+ * that will lead to one of its sons, according to the answer.
+ * E.g : "Have more than 15 HP ?" "No" "Go to left son, then".
  */
 public class Rule extends DecisionTreeNode {
 //ATTRIBUTES

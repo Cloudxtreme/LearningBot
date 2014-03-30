@@ -67,7 +67,7 @@ public abstract class DecisionTreeNode {
 	
 //OTHER METHODS
 	/**
-	 * Looks at the tree and returns the decision to take in function of the current context.
+	 * Looks at the tree and returns the decision to take in according to the current context.
 	 * @param robot The current robot
 	 * @return The decision to take
 	 */
