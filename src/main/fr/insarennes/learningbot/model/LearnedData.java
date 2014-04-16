@@ -25,7 +25,8 @@ public class LearnedData {
 //CONSTRUCTOR
 	/**
 	 * Class constructor
-	 * @param e The event to save
+	 * @param b LearningBot itself.
+	 * @param e The ennemy robot
 	 */
 	public LearnedData(LearningBot b, ScannedRobotEvent e) {
 		if(properties == null) { 
@@ -33,32 +34,34 @@ public class LearnedData {
 		}
 
 		data = new HashMap<BonzaiProperty,String>();
-		data.put(properties.get("op_bearing"), String.valueOf(e.getBearing())); // not sure if useful
+//		data.put(properties.get("op_bearing"), String.valueOf(e.getBearing())); // not sure if useful
 		data.put(properties.get("op_distance"), String.valueOf(e.getDistance()));
-		data.put(properties.get("op_energy"), String.valueOf(e.getEnergy()));
-		data.put(properties.get("op_heading"), String.valueOf(e.getHeading()));
-		data.put(properties.get("op_name"), String.valueOf(e.getName()));
-		data.put(properties.get("op_velocity"), String.valueOf(e.getVelocity()));
-//		data.put(properties.get("my_distremain"), String.valueOf(b.getDistanceRemaining()));
-		data.put(properties.get("my_energy"), String.valueOf(b.getEnergy()));
-		data.put(properties.get("my_gunheading"), String.valueOf(b.getGunHeading()));
-//		data.put(properties.get("my_gunheat"), String.valueOf(b.getGunHeat()));
-		data.put(properties.get("my_heading"), String.valueOf(b.getHeading()));
-		data.put(properties.get("my_x"), String.valueOf(b.getX()));
-		data.put(properties.get("my_y"), String.valueOf(b.getY()));
+//		data.put(properties.get("op_energy"), String.valueOf(e.getEnergy()));
+//		data.put(properties.get("op_heading"), String.valueOf(e.getHeading()));
+//		data.put(properties.get("op_name"), String.valueOf(e.getName()));
+//		data.put(properties.get("op_velocity"), String.valueOf(e.getVelocity()));
+////		data.put(properties.get("my_distremain"), String.valueOf(b.getDistanceRemaining()));
+//		data.put(properties.get("my_energy"), String.valueOf(b.getEnergy()));
+//		data.put(properties.get("my_gunheading"), String.valueOf(b.getGunHeading()));
+////		data.put(properties.get("my_gunheat"), String.valueOf(b.getGunHeat()));
+//		data.put(properties.get("my_heading"), String.valueOf(b.getHeading()));
+//		data.put(properties.get("my_x"), String.valueOf(b.getX()));
+//		data.put(properties.get("my_y"), String.valueOf(b.getY()));
 		data.put(properties.get("shoot"), "not_shoot");
 
-		LearnedData lastData = b.getLastData();
+//		LearnedData lastData = b.getLastData();
+		
+		data.put(properties.get("my_guntowardsennemy"), String.valueOf((b.getHeading() + e.getBearing()) % 360 ));
 		
 		//Get the direction of the robot (depends of previous data)
-		String direction;
-		direction = calculateDirection(lastData);
-		data.put(properties.get("direction"), direction);
+//		String direction;
+//		direction = calculateDirection(lastData);
+//		data.put(properties.get("direction"), direction);
 		
 		//Get the gun direction
-		String gunDirection;
-		gunDirection = calculateGunDirection(lastData);
-		data.put(properties.get("gundirection"), gunDirection);
+//		String gunDirection;
+//		gunDirection = calculateGunDirection(lastData);
+//		data.put(properties.get("gundirection"), gunDirection);
 	}
 	
 //ACCESSORS
@@ -122,17 +125,20 @@ public class LearnedData {
 		properties.put("shoot", new BonzaiProperty(BonzaiProperty.CLASS_LABEL, "shoot"));
 		properties.get("shoot").addValue("shoot");
 		properties.get("shoot").addValue("not_shoot");
-		properties.put("direction", new BonzaiProperty(BonzaiProperty.CLASS_LABEL, "direction"));
-		properties.get("direction").addValue("forward");
-		properties.get("direction").addValue("backward");
-		properties.get("direction").addValue("left");
-		properties.get("direction").addValue("right");
-		properties.get("direction").addValue("stay");
-		properties.put("gundirection", new BonzaiProperty(BonzaiProperty.CLASS_LABEL, "gundirection"));
-		properties.get("gundirection").addValue("front");
-		properties.get("gundirection").addValue("back");
-		properties.get("gundirection").addValue("left");
-		properties.get("gundirection").addValue("right");
+		properties.put("my_guntowardsennemy", new BonzaiProperty(BonzaiProperty.INPUT_CONTINUOUS, "my_guntowardsennemy"));
+
+		
+//		properties.put("direction", new BonzaiProperty(BonzaiProperty.CLASS_LABEL, "direction"));
+//		properties.get("direction").addValue("forward");
+//		properties.get("direction").addValue("backward");
+//		properties.get("direction").addValue("left");
+//		properties.get("direction").addValue("right");
+//		properties.get("direction").addValue("stay");
+//		properties.put("gundirection", new BonzaiProperty(BonzaiProperty.CLASS_LABEL, "gundirection"));
+//		properties.get("gundirection").addValue("front");
+//		properties.get("gundirection").addValue("back");
+//		properties.get("gundirection").addValue("left");
+//		properties.get("gundirection").addValue("right");
 	}
 	
 	/**
@@ -211,7 +217,7 @@ public class LearnedData {
 		return result;
 	}
 	
-	/**
+	/**FIXME use Coordinates instead
 	 * Calculates the direction of a vector (from 0° (north) to 360° clockwise)
 	 * @param x1 The start point X
 	 * @param x2 The end point X

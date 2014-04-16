@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
@@ -16,6 +17,7 @@ import robocode.HitByBulletEvent;
 import robocode.HitRobotEvent;
 import robocode.HitWallEvent;
 import robocode.ScannedRobotEvent;
+import fr.insarennes.learningbot.model.Coordinates;
 import fr.insarennes.learningbot.model.DecisionTree;
 import fr.insarennes.learningbot.model.LearnedData;
 
@@ -63,19 +65,52 @@ public class LearningBot extends Thorn {
 	public void run() {
 		loadTree();
 		
-		super.run();
+		if (tree == null) {
+			super.run();
+		}
+		else {
+			List<Coordinates> steps = new LinkedList<Coordinates>();
+			steps.add(new Coordinates(getBattleFieldWidth()/6, getBattleFieldHeight()/6));
+			steps.add(new Coordinates((getBattleFieldWidth()/6)*5, (getBattleFieldHeight()/6)*5));
+			steps.add(new Coordinates(getBattleFieldWidth()/6, (getBattleFieldHeight()/6)*5));
+			steps.add(new Coordinates((getBattleFieldWidth()/6)*5, getBattleFieldHeight()/6));
+			
+			
+			setTurnGunRight(Double.POSITIVE_INFINITY);
+			execute();
+			
+			
+			while (true) {
+				for (Coordinates currentStep : steps) {
+					moveTo(currentStep);
+				}
+				
+			}
+		}
+			
+			
+	}
+	
+	private void moveTo(Coordinates to) {
+		//orientation
+		//tournerdroite de getVect - orientation actuelle
+		turnRight(Coordinates.getVectorDirection(new Coordinates(getX(), getY()), to) - getHeading());
+		
+		//movement
+		ahead(Math.sqrt(Math.pow(to.getX() - getX(), 2) + Math.pow(to.getY() - getY(), 2)));
+		
 	}
 	
 	/**
 	 * This method is called when a robot is detected
 	 */
 	public void onScannedRobot(ScannedRobotEvent e) {
-		if ((FIXME_betterNameAndCleaner++) % 5 == 0)
+		//if ((FIXME_betterNameAndCleaner++) % 5 == 0)
 			knowledge.add(new LearnedData(this, e));
 		if(tree == null) {
 			super.onScannedRobot(e);
 		}
-		else if ((FIXME_betterNameAndCleaner++) % 5 == 0) {
+		else {//if ((FIXME_betterNameAndCleaner++) % 5 == 0) {
 			
 			//Decision for shoot
 			if(tree.doWeShoot(this)) {
