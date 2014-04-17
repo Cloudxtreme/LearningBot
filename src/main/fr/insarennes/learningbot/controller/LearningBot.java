@@ -167,7 +167,9 @@ public class LearningBot extends Thorn {
 		if (tree == null) {	
 			super.onBulletHit(e);
 		}
-		knowledge.get(knowledge.size()-1).setShootSuccesful();
+		for(int i=1; i <= 10 && i <= knowledge.size(); i++) {
+			knowledge.get(knowledge.size()-i).setShootSuccesful();
+		}
 	}
 	
 	public void onBulletMissed(BulletMissedEvent e) {

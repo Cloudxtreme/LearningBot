@@ -34,17 +34,17 @@ public class LearnedData {
 		}
 
 		data = new HashMap<BonzaiProperty,String>();
-//		data.put(properties.get("op_bearing"), String.valueOf(e.getBearing())); // not sure if useful
+		data.put(properties.get("op_bearing"), String.valueOf(e.getBearing())); // not sure if useful
 		data.put(properties.get("op_distance"), String.valueOf(e.getDistance()));
-//		data.put(properties.get("op_energy"), String.valueOf(e.getEnergy()));
-//		data.put(properties.get("op_heading"), String.valueOf(e.getHeading()));
-//		data.put(properties.get("op_name"), String.valueOf(e.getName()));
-//		data.put(properties.get("op_velocity"), String.valueOf(e.getVelocity()));
-////		data.put(properties.get("my_distremain"), String.valueOf(b.getDistanceRemaining()));
-//		data.put(properties.get("my_energy"), String.valueOf(b.getEnergy()));
-//		data.put(properties.get("my_gunheading"), String.valueOf(b.getGunHeading()));
-////		data.put(properties.get("my_gunheat"), String.valueOf(b.getGunHeat()));
-//		data.put(properties.get("my_heading"), String.valueOf(b.getHeading()));
+		data.put(properties.get("op_energy"), String.valueOf(e.getEnergy()));
+		data.put(properties.get("op_heading"), String.valueOf(e.getHeading()));
+		data.put(properties.get("op_name"), String.valueOf(e.getName()));
+		data.put(properties.get("op_velocity"), String.valueOf(e.getVelocity()));
+		data.put(properties.get("my_distremain"), String.valueOf(b.getDistanceRemaining()));
+		data.put(properties.get("my_energy"), String.valueOf(b.getEnergy()));
+		data.put(properties.get("my_gunheading"), String.valueOf(b.getGunHeading()));
+		data.put(properties.get("my_gunheat"), String.valueOf(b.getGunHeat()));
+		data.put(properties.get("my_heading"), String.valueOf(b.getHeading()));
 //		data.put(properties.get("my_x"), String.valueOf(b.getX()));
 //		data.put(properties.get("my_y"), String.valueOf(b.getY()));
 		data.put(properties.get("shoot"), "not_shoot");
