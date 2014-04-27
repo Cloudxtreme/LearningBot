@@ -47,7 +47,7 @@ public class LearnedData {
 		data.put(properties.get("my_heading"), String.valueOf(b.getHeading()));
 //		data.put(properties.get("my_x"), String.valueOf(b.getX()));
 //		data.put(properties.get("my_y"), String.valueOf(b.getY()));
-		data.put(properties.get("shoot"), "not_shoot");
+		data.put(properties.get("shoot"), "not_shoot"); // we first suppose it a miss, and will possibly change that later.
 
 //		LearnedData lastData = b.getLastData();
 		
