@@ -41,7 +41,10 @@ public class DecisionTree {
 	public boolean doWeShoot(LearningBot robot) {
 		Decision d = root.decisionToTake(robot);
 		
-		return d.getPopulation("shoot") > d.getPopulation("not_shoot");
+		if (d == null) // Was not able to take a decision. Should not occur, but, just in case...
+			return false;
+		else
+			return d.getPopulation("shoot") > d.getPopulation("not_shoot");
 	}
 	
 	/**

@@ -62,28 +62,28 @@ public class Rule extends DecisionTreeNode {
 		Decision result = null;
 		
 		//Call this method recursively on the correct son (regarding to robot context)
-		LearnedData context = robot.getLastData();
-		if(context != null) {
-			String value = context.getValue(onLabel);
-			
-			//Try to parse a double value
-			try {
-				double dVal = Double.parseDouble(value);
-				if(dVal < doubleValue) {
-					result = leftSon.decisionToTake(robot);
-				} else {
-					result = rightSon.decisionToTake(robot);
-				}
-			}
-			//If an error occurs, it's a string value
-			catch(NumberFormatException e) {
-				if(value.equals(strValue)) {
-					result = leftSon.decisionToTake(robot);
-				} else {
-					result = rightSon.decisionToTake(robot);
-				}
+		LearnedData context = new LearnedData(robot, robot.getLastOpponentScan());
+		
+		String value = context.getValue(onLabel);
+
+		//Try to parse a double value
+		try {
+			double dVal = Double.parseDouble(value);
+			if (dVal < doubleValue) {
+				result = leftSon.decisionToTake(robot);
+			} else {
+				result = rightSon.decisionToTake(robot);
 			}
 		}
+		//If an error occurs, it's a string value
+		catch (NumberFormatException e) {
+			if (value.equals(strValue)) {
+				result = leftSon.decisionToTake(robot);
+			} else {
+				result = rightSon.decisionToTake(robot);
+			}
+		}
+
 		
 		return result;
 	}
