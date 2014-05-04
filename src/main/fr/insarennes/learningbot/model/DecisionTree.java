@@ -43,8 +43,9 @@ public class DecisionTree {
 		
 		if (d == null) // Was not able to take a decision. Should not occur, but, just in case...
 			return false;
-		else
+		else {
 			return d.getPopulation("shoot") > d.getPopulation("not_shoot");
+		}
 	}
 	
 	/**

@@ -53,7 +53,7 @@ public class LearnedData {
 
 //		LearnedData lastData = b.getLastData();
 		
-		data.put(properties.get("my_guntowardsennemy"), String.valueOf((b.getHeading() + e.getBearing()) % 360 ));
+		data.put(properties.get("my_guntowardsennemy"), String.valueOf(((b.getHeading() + e.getBearing()) % 360) - b.getGunHeading()));//TODO Might need tests and/or simplifications.
 		
 		//Get the direction of the robot (depends of previous data)
 //		String direction;
@@ -65,6 +65,7 @@ public class LearnedData {
 //		gunDirection = calculateGunDirection(lastData);
 //		data.put(properties.get("gundirection"), gunDirection);
 	}
+	
 	
 //ACCESSORS
 	/**

@@ -15,10 +15,10 @@ import robocode.Bullet;
 import robocode.BulletHitBulletEvent;
 import robocode.BulletHitEvent;
 import robocode.BulletMissedEvent;
-import robocode.HitByBulletEvent;
-import robocode.HitRobotEvent;
-import robocode.HitWallEvent;
+import robocode.Condition;
+import robocode.CustomEvent;
 import robocode.ScannedRobotEvent;
+import robocode.SkippedTurnEvent;
 import fr.insarennes.learningbot.model.Coordinates;
 import fr.insarennes.learningbot.model.DecisionTree;
 import fr.insarennes.learningbot.model.LearnedData;
@@ -46,12 +46,19 @@ public class LearningBot extends Thorn {
 	 * Thus it (approximatively) links to shootings (impacts)
 	 * to their circumstances when shot (the corresponding LearnedData)
 	 */
-	private int nextDataToSet;
+	private static int nextDataToSet = 0;
 	
 	/**
 	 * Used in order to keep a constantly refreshed view of the enemy.
 	 */
 	private ScannedRobotEvent lastOpponentScan;
+	
+	/**
+	 * The previous tick's gun heat is constantly saved in order to be able to know if 
+	 * the gun just fired (i.e if the current gun heat is suddenly above the previous one)
+	 * (see the custom events)
+	 */
+	private double previousTicksGunHeat;
 	
 //CONSTRUCTOR
 	/**
@@ -60,7 +67,6 @@ public class LearningBot extends Thorn {
 	public LearningBot() {
 		super();
 		
-		this.nextDataToSet= 0;
 		this.lastOpponentScan = null;
 	}
 
@@ -82,39 +88,28 @@ public class LearningBot extends Thorn {
 		loadTree();
 		
 		setAllColors(Color.GREEN);
+		this.previousTicksGunHeat = getGunHeat();
+		
+		addCustomEvent(new Condition("onshoot", 84) {
+			public boolean test() {
+				return getGunHeat() > previousTicksGunHeat;
+			}
+		});
+		
+		addCustomEvent(new Condition("oneachtick", 83) {
+			public boolean test() {
+				return true;
+			}
+		});
 		
 		super.run();
 		//TODO virer tous les codes commentés une fois qu'on sait que ça marche sans
-/*		if (tree == null) {
-			super.run();
-		}
-		else {
-			List<Coordinates> steps = new LinkedList<Coordinates>();
-			steps.add(new Coordinates(getBattleFieldWidth()/6, getBattleFieldHeight()/6));
-			steps.add(new Coordinates((getBattleFieldWidth()/6)*5, (getBattleFieldHeight()/6)*5));
-			steps.add(new Coordinates(getBattleFieldWidth()/6, (getBattleFieldHeight()/6)*5));
-			steps.add(new Coordinates((getBattleFieldWidth()/6)*5, getBattleFieldHeight()/6));
-			
-			
-			setTurnGunRight(Double.POSITIVE_INFINITY);
-			execute();
-			
-			
-			while (true) {
-				for (Coordinates currentStep : steps) {
-					moveTo(currentStep);
-				}
-				
-			}
-		}
-	*/		
-			
 	}
 	
 	/**
 	 * Moves the robot to a certain point on the map, using Robocode's axes.
 	 * Returns when the robot has arrived. (possibly before if there has been an error while moving)
-	 * @param to
+	 * @param to the coordinate where it should move
 	 */
 	private void moveTo(Coordinates to) {
 		//orientation
@@ -130,7 +125,6 @@ public class LearningBot extends Thorn {
 	@Override
 	public void fire(double power) {
 		if (tree == null || tree.doWeShoot(this)){
-			knowledge.add(new LearnedData(this, this.lastOpponentScan));
 			super.fire(power);
 		}
 	}
@@ -138,7 +132,6 @@ public class LearningBot extends Thorn {
 	@Override
 	public Bullet fireBullet(double power) {
 		if (tree == null || tree.doWeShoot(this)) {
-			knowledge.add(new LearnedData(this, this.lastOpponentScan));
 			return super.fireBullet(power);
 		}
 		else
@@ -147,9 +140,7 @@ public class LearningBot extends Thorn {
 	
 	@Override
 	public void setFire(double power) {
-		
 		if (tree == null || tree.doWeShoot(this)) {
-			knowledge.add(new LearnedData(this, this.lastOpponentScan));
 			super.setFire(power);
 		}
 		else
@@ -159,20 +150,18 @@ public class LearningBot extends Thorn {
 	@Override
 	public Bullet setFireBullet(double power) {
 		if (tree == null || tree.doWeShoot(this)) {
-			knowledge.add(new LearnedData(this, this.lastOpponentScan));
 			return super.fireBullet(power);
 		} 
 		else 
 			return null;
 	}
 	
-	
 	@Override
 	public void onScannedRobot(ScannedRobotEvent e) {
 		this.lastOpponentScan = e;
 		
-		if (tree != null && tree.doWeShoot(this) && getGunHeat() == 0) {
-			fire(BULLET_POWER); // tree will be looked at twice, use super.setFire instead if you need perf.
+		if (tree != null && getGunHeat() == 0 && tree.doWeShoot(this)) {
+			super.fire(BULLET_POWER); // super in order not to check the whole tree again
 			System.err.println("Proudly fired with BonzaiBoost (c)");
 		}
 			
@@ -236,25 +225,16 @@ public class LearningBot extends Thorn {
 
 	@Override
 	public void onBulletHit(BulletHitEvent e) {
-		/*if (tree == null) {	
-			super.onBulletHit(e);
-		}*/
-		
-		knowledge.get(this.nextDataToSet).setShootSuccesful();
-		this.nextDataToSet++;
+		knowledge.get(nextDataToSet).setShootSuccesful();
+		nextDataToSet++;
 		
 		super.onBulletHit(e);
 	}
 	
 	@Override
 	public void onBulletMissed(BulletMissedEvent e) {
-	/*	if(tree == null) {
-			super.onBulletMissed(e);
-		}
-		setLastGunDirectionWrong();
-		*/
-		knowledge.get(this.nextDataToSet).setShootFailed();
-		this.nextDataToSet++;
+		knowledge.get(nextDataToSet).setShootFailed();
+		nextDataToSet++;
 		
 		super.onBulletMissed(e);
 	}
@@ -263,46 +243,16 @@ public class LearningBot extends Thorn {
 	public void onBulletHitBullet(BulletHitBulletEvent e) {
 		// TODO TO_DISCUSS Should it be considered a failure or a success ?
 		
-		knowledge.get(this.nextDataToSet).setShootSuccesful();
-		this.nextDataToSet++;
+		knowledge.get(nextDataToSet).setShootSuccesful();
+		nextDataToSet++;
 		
 		super.onBulletHitBullet(e);
 	}
-	
-	@Override
-	public void onHitWall(HitWallEvent e) {
-	/*	if(tree == null) {
-			super.onHitWall(e);
-		}
-		setLastDirectionWrong();
-		*/
-		
-		super.onHitWall(e);
-	}
-	
-	@Override
-	public void onHitRobot(HitRobotEvent e) {
-	/*	if(tree == null) {
-			super.onHitRobot(e);
-		}
-		setLastDirectionWrong();
-		*/
-		super.onHitRobot(e);
-	}
-	
-	@Override
-	public void onHitByBullet(HitByBulletEvent e) {
-		/*if(tree == null) {
-			super.onHitByBullet(e);
-		}
-		setLastDirectionWrong();
-		*/
-		super.onHitByBullet(e);
-	}
-	
+
 	@Override
 	public void onBattleEnded(BattleEndedEvent e) {
 		//Save data in filesystem
+System.err.println("Data that will be written : "); for (LearnedData i : knowledge) System.err.println(i.getValue("shoot"));//FIXME
 		if(knowledge.size() > 0) {
 			LearnedDataWriter ldw = new LearnedDataWriter();
 			try {
@@ -315,7 +265,34 @@ public class LearningBot extends Thorn {
 			System.err.println("No data to save.");
 		}
 		
+		LearningBot.nextDataToSet = 0; // In case another battle would start
+		
 		super.onBattleEnded(e);
+	}
+	
+	@Override
+	public void onSkippedTurn(SkippedTurnEvent e) {
+		System.err.println("Taking too long to compute stuff, another turn was skipped :(");
+	}
+	
+
+	@Override
+	public void onCustomEvent(CustomEvent e) {
+		/*
+		 * Every turn :
+		 * Updating previousTicksGunHeat.
+		 */
+		if (e.getCondition().getName().equals("oneachtick")) {
+			this.previousTicksGunHeat = this.getGunHeat();
+		}
+		/*
+		 * Every time it shoots a bullet : 
+		 * Collecting data, that will eventually later
+		 * be considered as a good situation to shoot or not.
+		 */
+		else if (e.getCondition().getName().equals("onshoot")) {
+			knowledge.add(new LearnedData(this, this.lastOpponentScan));
+		}
 	}
 	
 	/**
@@ -389,8 +366,13 @@ public class LearningBot extends Thorn {
 		}
 		knowledge.get(knowledge.size()-1).setGunDirection(oppositeDirection);
 	}
-
+	
+	/**
+	 * Returns the last scan picturing the opponent that the robot made
+	 */
 	public ScannedRobotEvent getLastOpponentScan() {
-		return lastOpponentScan;
+		return this.lastOpponentScan;
 	}
+	
+	
 }
