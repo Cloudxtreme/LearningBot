@@ -9,7 +9,6 @@ import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
 
-import kc.micro.Thorn;
 import robocode.BattleEndedEvent;
 import robocode.Bullet;
 import robocode.BulletHitBulletEvent;
@@ -17,17 +16,21 @@ import robocode.BulletHitEvent;
 import robocode.BulletMissedEvent;
 import robocode.Condition;
 import robocode.CustomEvent;
+import robocode.RoundEndedEvent;
 import robocode.ScannedRobotEvent;
 import robocode.SkippedTurnEvent;
 import fr.insarennes.learningbot.model.Coordinates;
 import fr.insarennes.learningbot.model.DecisionTree;
 import fr.insarennes.learningbot.model.LearnedData;
+import fr.insarennes.learningbot.model.SuperClass;
 
 /**
  * A robot based on an existing one, however this one will improve itself over time,
  * by building and following a decision tree.
  */
-public class LearningBot extends Thorn {
+
+public class LearningBot extends SuperClass {
+
 //CONSTANTS
 	/** The file which contains the decision tree **/
 	private static final String TREE_FILE = "learningbot.tree.xml";
@@ -43,7 +46,7 @@ public class LearningBot extends Thorn {
 	 * Position in LearningBot.knowledge of the data that will need to be set to 
 	 * "shoot" (hit) or "not_shoot" (missed) when a bullet has respectively hit 
 	 * the opponent or a wall. Then it will be incremented. 
-	 * Thus it (approximatively) links to shootings (impacts)
+	 * Thus it (approximatively) links the shootings (impacts)
 	 * to their circumstances when shot (the corresponding LearnedData)
 	 */
 	private static int nextDataToSet = 0;
@@ -82,11 +85,12 @@ public class LearningBot extends Thorn {
 	
 //OTHER METHODS
 	/**
-	 * This method is launched when a battle starts
+	 * This method is called when a battle starts
 	 */
+	@Override
 	public void run() {
 		loadTree();
-		
+
 		setAllColors(Color.GREEN);
 		this.previousTicksGunHeat = getGunHeat();
 		
@@ -118,20 +122,19 @@ public class LearningBot extends Thorn {
 		
 		//movement
 		ahead(Math.sqrt(Math.pow(to.getX() - getX(), 2) + Math.pow(to.getY() - getY(), 2)));
-		
 	}
 	
 	/* REDEFINING FIRING (whether the bot should actually shoot or not) */
 	@Override
 	public void fire(double power) {
-		if (tree == null || tree.doWeShoot(this)){
+		if (shouldActuallyFire()){
 			super.fire(power);
 		}
 	}
 	
 	@Override
 	public Bullet fireBullet(double power) {
-		if (tree == null || tree.doWeShoot(this)) {
+		if (shouldActuallyFire()) {
 			return super.fireBullet(power);
 		}
 		else
@@ -140,16 +143,14 @@ public class LearningBot extends Thorn {
 	
 	@Override
 	public void setFire(double power) {
-		if (tree == null || tree.doWeShoot(this)) {
+		if (shouldActuallyFire()) {
 			super.setFire(power);
 		}
-		else
-			System.err.println("Nope, won't shoot that one");
 	}
 	
 	@Override
 	public Bullet setFireBullet(double power) {
-		if (tree == null || tree.doWeShoot(this)) {
+		if (shouldActuallyFire()) {
 			return super.fireBullet(power);
 		} 
 		else 
@@ -162,65 +163,10 @@ public class LearningBot extends Thorn {
 		
 		if (tree != null && getGunHeat() == 0 && tree.doWeShoot(this)) {
 			super.fire(BULLET_POWER); // super in order not to check the whole tree again
-			System.err.println("Proudly fired with BonzaiBoost (c)");
+//			System.err.println("Proudly fired with BonzaiBoost (c)");
 		}
 			
 		super.onScannedRobot(e);
-		
-		/*if(tree == null) {
-			super.onScannedRobot(e);
-		}
-		else {
-			
-			//Decision for shoot
-			if(tree.doWeShoot(this)) {
-				fireBullet(BULLET_POWER);
-				System.err.println("Proudly fired with BonzaiBoost (c)");
-			}
-			
-			//Decision for direction
-			String direction = tree.whereDoWeGo(this);
-			switch(direction) {
-				case "forward":
-				case "stay":
-				case "backward":
-					break;
-				case "left":
-					setTurnLeft(90);
-					break;
-				case "right":
-					setTurnRight(90);
-					break;
-			}
-			*/
-			//Decision for gun direction
-		/*	String gunDirection = tree.whatGunOrientation(this);
-			switch(gunDirection) {
-				case "front":
-					break;
-				case "back":
-					setTurnGunLeft(180);
-					break;
-				case "left":
-					setTurnGunLeft(90);
-					break;
-				case "right":
-					setTurnGunRight(90);
-					break;
-			}*///FIXME
-			
-		/*	execute();//FIXME shouldn't be after setAhead ?
-			
-			//Hardcoded speed
-			if(!direction.equals("stay")) {
-				double distance = 70;
-				if(direction.equals("backward")) {
-					setBack(distance);
-				} else {
-					setAhead(distance);
-				}
-			}
-		}*/
 	}
 
 	@Override
@@ -273,9 +219,14 @@ System.err.println("Data that will be written : "); for (LearnedData i : knowled
 	@Override
 	public void onSkippedTurn(SkippedTurnEvent e) {
 		System.err.println("Taking too long to compute stuff, another turn was skipped :(");
+	} 
+	
+	@Override
+	public void onRoundEnded(RoundEndedEvent event) {
+		nextDataToSet = knowledge.size(); // If there are bullets still in the air, the next data to set must be one of the next round
+		super.onRoundEnded(event);
 	}
 	
-
 	@Override
 	public void onCustomEvent(CustomEvent e) {
 		/*
@@ -317,6 +268,7 @@ System.err.println("Data that will be written : "); for (LearnedData i : knowled
 	}
 	
 	/**
+	 * DEPRECATED (might be useful to future features, but is currently not used)
 	 * Sets the last used direction as wrong in data
 	 */
 	private void setLastDirectionWrong() {
@@ -344,6 +296,7 @@ System.err.println("Data that will be written : "); for (LearnedData i : knowled
 	}
 	
 	/**
+	 * DEPRECATED
 	 * Sets the last used direction for gun as wrong in data
 	 */
 	private void setLastGunDirectionWrong() {
@@ -367,6 +320,14 @@ System.err.println("Data that will be written : "); for (LearnedData i : knowled
 		knowledge.get(knowledge.size()-1).setGunDirection(oppositeDirection);
 	}
 	
+	/**
+	 * Return true when either :
+	 * - LearningBot is behaving exactly like its super class
+	 * - LearningBot is following the decision tree, which said firing would be a good idea right now.
+	 */
+	private boolean shouldActuallyFire() {
+		return (tree == null || tree.doWeShoot(this));
+	}
 	/**
 	 * Returns the last scan picturing the opponent that the robot made
 	 */

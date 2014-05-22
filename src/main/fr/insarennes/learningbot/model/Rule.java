@@ -63,6 +63,7 @@ public class Rule extends DecisionTreeNode {
 		
 		//Call this method recursively on the correct son (regarding to robot context)
 		LearnedData context = new LearnedData(robot, robot.getLastOpponentScan());
+		//FIXME it's always the same data during the whole recursion, but a new one is created each step.
 		
 		String value = context.getValue(onLabel);
 

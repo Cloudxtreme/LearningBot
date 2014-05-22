@@ -51,19 +51,7 @@ public class LearnedData {
 		data.put(properties.get("shoot"), "unknown"); 
 		// we don't know for now if it will be missed or not. Almost all data should be set shoot or not_shoot before the end of the battle
 
-//		LearnedData lastData = b.getLastData();
-		
 		data.put(properties.get("my_guntowardsennemy"), String.valueOf(((b.getHeading() + e.getBearing()) % 360) - b.getGunHeading()));//TODO Might need tests and/or simplifications.
-		
-		//Get the direction of the robot (depends of previous data)
-//		String direction;
-//		direction = calculateDirection(lastData);
-//		data.put(properties.get("direction"), direction);
-		
-		//Get the gun direction
-//		String gunDirection;
-//		gunDirection = calculateGunDirection(lastData);
-//		data.put(properties.get("gundirection"), gunDirection);
 	}
 	
 	
@@ -113,7 +101,7 @@ public class LearnedData {
 
 //OTHER METHODS
 	/**
-	 * Initializes the properties which CAN be used
+	 * Initializes the properties which CAN be used (doesn't matter if initialized but not used)
 	 */
 	private void initProperties() {
 		properties = new HashMap<String,BonzaiProperty>();
@@ -173,15 +161,12 @@ public class LearnedData {
 			//Calculate the robot relative rotation
 			double relativeRobotHeading = movementHeading-lastHeading;
 			if(relativeRobotHeading >= 45 && relativeRobotHeading < 135) {
-	System.err.println("\nLE BOT TOURNE A DROITE !\n");//FIXME
-
 				result = "right";
 			}
 			else if(relativeRobotHeading >= 135 && relativeRobotHeading < 225) {
 				result = "backward"; 
 			}
 			else if(relativeRobotHeading >= 225 && relativeRobotHeading < 315) {
-	System.err.println("\nLE BOT TOURNE A GAUCHE !\n");//FIXME
 				result = "left";
 			}
 			else {

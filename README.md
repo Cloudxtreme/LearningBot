@@ -26,3 +26,7 @@ Execute *bonzaiboost -S learningbot*, you can add the *-jobs n* option, were n i
 Full command, with 4 threads and tree accuracy display : *sed -i 's/null/not_shoot/g' learningbot.data;bonzaiboost -S learningbot -jobs 4 -leaf 10; bonzaiboost -S learningbot -C < learningbot.data > /dev/null*
 
 
+
+With correct libraries installed, you can run 
+cat tree.learningbot.dot | dot -Tpng > tree.png
+to get a png of the tree.

@@ -15,6 +15,13 @@ public class DecisionTree {
 	/** The root of the tree **/
 	private DecisionTreeNode root;
 	
+	/**
+	 * Percentage (between 0 and 100) of how many successful hits are needed (at least)
+	 * to allow firing
+	 * Ex : On all shots (hit+miss), I'll shoot as long as there is at least 30% of successful hits.
+	 */
+	public final static int MIN_HIT_PERCENTAGE = 30;
+	
 //CONSTRUCTOR
 	/**
 	 * Class constructor
@@ -41,14 +48,19 @@ public class DecisionTree {
 	public boolean doWeShoot(LearningBot robot) {
 		Decision d = root.decisionToTake(robot);
 		
-		if (d == null) // Was not able to take a decision. Should not occur, but, just in case...
+		if (d == null) {// Was not able to take a decision. Should not occur, but, just in case...
+			System.err.println("\nPROBLEM IN TREE : WAS NOT ABLE TO TAKE A DECISION\n");
 			return false;
+		}
 		else {
-			return d.getPopulation("shoot") > d.getPopulation("not_shoot");
+			int shoot = d.getPopulation("shoot"), not_shoot = d.getPopulation("not_shoot");
+					
+			return (shoot/(shoot+not_shoot)*100) > MIN_HIT_PERCENTAGE;
 		}
 	}
 	
 	/**
+	 * DEPRECATED 
 	 * Where the robot should go ?
 	 * @param robot The current robot.
 	 * @return The direction to take as a string : "forward", "backward", "right", "left", "stay"
@@ -67,6 +79,7 @@ public class DecisionTree {
 	}
 	
 	/**
+	 * DEPRECATED
 	 * Where the robot gun should point ?
 	 * @param robot The current robot.
 	 * @return The direction the gun should take as a string : "front", "back", "right", "left"
