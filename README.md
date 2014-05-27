@@ -28,5 +28,5 @@ Full command, with 4 threads and tree accuracy display : *sed -i 's/null/not_sho
 
 
 With correct libraries installed, you can run 
-cat tree.learningbot.dot | dot -Tpng > tree.png
+cat learningbot.tree.dot | dot -Tpng > tree.png
 to get a png of the tree.

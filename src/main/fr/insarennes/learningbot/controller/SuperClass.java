@@ -15,7 +15,7 @@ FoilistMicro is open source and released under the terms of the RoboWiki Public 
 see license here:  http://robowiki.net/wiki/RWPCL
 */
 
-package fr.insarennes.learningbot.model;
+package fr.insarennes.learningbot.controller;
 
 import robocode.*;
 import robocode.util.Utils;

@@ -22,7 +22,6 @@ import robocode.SkippedTurnEvent;
 import fr.insarennes.learningbot.model.Coordinates;
 import fr.insarennes.learningbot.model.DecisionTree;
 import fr.insarennes.learningbot.model.LearnedData;
-import fr.insarennes.learningbot.model.SuperClass;
 
 /**
  * A robot based on an existing one, however this one will improve itself over time,
@@ -79,6 +78,15 @@ public class LearningBot extends SuperClass {
 	 */
 	public LearnedData getLastData() {
 		return (knowledge.size() > 0) ? knowledge.get(knowledge.size()-1) : null;
+	}
+	
+	/**
+	 * Get data from past
+	 * @param offset The index of previous data (1 = last data, 5 = 5 records from now)
+	 * @return The wanted data
+	 */
+	public LearnedData getDataFromPast(int offset) {
+		return (knowledge.size() >= offset) ? knowledge.get(knowledge.size()-offset) : null;
 	}
 	
 //MODIFIERS
@@ -197,9 +205,11 @@ public class LearningBot extends SuperClass {
 
 	@Override
 	public void onBattleEnded(BattleEndedEvent e) {
-		//Save data in filesystem
+		
 System.err.println("Data that will be written : "); for (LearnedData i : knowledge) System.err.println(i.getValue("shoot"));//FIXME
+
 		if(knowledge.size() > 0) {
+			//Save data in filesystem
 			LearnedDataWriter ldw = new LearnedDataWriter();
 			try {
 				ldw.write(knowledge, getDataFile("learningbot.data"), getDataFile("learningbot.names"));
