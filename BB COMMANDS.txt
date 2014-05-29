@@ -1,0 +1,28 @@
+  372  bonzaiboost -S learningbot -jobs 4
+  375  bonzaiboost -S learningbot -jobs 4
+  376  bonzaiboost -S learningbot -C < learningbot.data > /dev/null
+  382  bonzaiboost -S learningbot -jobs 4
+  383  bonzaiboost -S learningbot -C < learningbot.data > /dev/null
+  454  bonzaiboost -S learningbot -mdlpc -cross 1000
+  456  bonzaiboost -S learningbot -mdlpc -cross 1000
+  458  bonzaiboost -S learningbot -mdlpc -cross 1000
+  460  bonzaiboost -S learningbot -mdlpc -cross 1000
+  461  bonzaiboost --version
+  464  which bonzaiboost
+  465  sudo cp bonzaiboost-linux64-v1.6.9beta /usr/bin/bonzaiboost
+  466  bonzaiboost --version
+  468  bonzaiboost -S learningbot -mdlpc 
+  469  bonzaiboost -S learningbot -mdlpc -cross 1000
+  470  bonzaiboost -S learningbot -leaf 10 -cross 1000 -jobs 4
+  471  bonzaiboost -S learningbot -leaf 5 -cross 1000 -jobs 4
+  472  bonzaiboost -S learningbot -leaf 2 -cross 1000 -jobs 4
+  473  bonzaiboost -S learningbot -leaf 2 -cross 500 -jobs 4
+  474  bonzaiboost -S learningbot -boost adamh -d 1 -n 50
+  475  bonzaiboost -S learningbot -boost adamh -d 1 -n 50 --info
+  476  bonzaiboost -S learningbot -boost adamh -d 2 -n 50 
+  480  bonzaiboost -S learningbot -boost adamh -d 2 -n 50 
+  481  bonzaiboost -S learningbot -boost adamh -d 2 -n 50 __info
+  482  bonzaiboost -S learningbot -boost adamh -d 2 -n 50 --info
+  483  bonzaiboost -S learningbot -leaf 2 -cross 1000 -jobs 4
+  484  bonzaiboost -S learningbot  -cross 1000 -jobs 4 -boost adamh -n 50 -d 2
+  486  history | grep bonzai > cmds.txt

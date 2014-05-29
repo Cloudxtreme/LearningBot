@@ -205,21 +205,9 @@ public class LearningBot extends SuperClass {
 
 	@Override
 	public void onBattleEnded(BattleEndedEvent e) {
-		
-System.err.println("Data that will be written : "); for (LearnedData i : knowledge) System.err.println(i.getValue("shoot"));//FIXME
+//		System.err.println("Data that will be written : "); for (LearnedData i : knowledge) System.err.println(i.getValue("shoot"));//FIXME
 
-		if(knowledge.size() > 0) {
-			//Save data in filesystem
-			LearnedDataWriter ldw = new LearnedDataWriter();
-			try {
-				ldw.write(knowledge, getDataFile("learningbot.data"), getDataFile("learningbot.names"));
-			} catch (IOException e1) {
-				e1.printStackTrace();
-				System.err.println("Failed to save collected data.");
-			}
-		} else {
-			System.err.println("No data to save.");
-		}
+		writeDataInFile();
 		
 		LearningBot.nextDataToSet = 0; // In case another battle would start
 		
@@ -233,6 +221,9 @@ System.err.println("Data that will be written : "); for (LearnedData i : knowled
 	
 	@Override
 	public void onRoundEnded(RoundEndedEvent event) {
+//		writeDataInFile();
+//		nextDataToSet = 0;
+//		knowledge.clear();
 		nextDataToSet = knowledge.size(); // If there are bullets still in the air, the next data to set must be one of the next round
 		super.onRoundEnded(event);
 	}
@@ -345,5 +336,18 @@ System.err.println("Data that will be written : "); for (LearnedData i : knowled
 		return this.lastOpponentScan;
 	}
 	
-	
+	private void writeDataInFile() {
+		if(knowledge.size() > 0) {
+			//Save data in filesystem
+			LearnedDataWriter ldw = new LearnedDataWriter();
+			try {
+				ldw.write(knowledge, getDataFile("learningbot.data"), getDataFile("learningbot.names"));
+			} catch (IOException e1) {
+				e1.printStackTrace();
+				System.err.println("Failed to save collected data.");
+			}
+		} else {
+			System.err.println("No data to save.");
+		}
+	}
 }

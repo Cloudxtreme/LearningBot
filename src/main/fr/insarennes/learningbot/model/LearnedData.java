@@ -1,7 +1,6 @@
 package fr.insarennes.learningbot.model;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -39,7 +38,7 @@ public class LearnedData {
 		data.put(properties.get("op_distance"), String.valueOf(e.getDistance()));
 		data.put(properties.get("op_energy"), String.valueOf(e.getEnergy()));
 		data.put(properties.get("op_heading"), String.valueOf(e.getHeading()));
-		data.put(properties.get("op_name"), String.valueOf(e.getName()));
+//		data.put(properties.get("op_name"), String.valueOf(e.getName()));
 		data.put(properties.get("op_velocity"), String.valueOf(e.getVelocity()));
 		data.put(properties.get("my_distremain"), String.valueOf(b.getDistanceRemaining()));
 		data.put(properties.get("my_energy"), String.valueOf(b.getEnergy()));
@@ -50,46 +49,18 @@ public class LearnedData {
 		data.put(properties.get("my_y"), String.valueOf(b.getY()));
 		data.put(properties.get("op_x"), String.valueOf(getEnnemyX(b, e)));
 		data.put(properties.get("op_y"), String.valueOf(getEnnemyY(b, e)));
+		data.put(properties.get("dist_x"), String.valueOf(getDistanceX(b, e)));
+		data.put(properties.get("dist_y"), String.valueOf(getDistanceY(b, e)));
+		data.put(properties.get("dist"), String.valueOf(getDistance(b, e)));
+		data.put(properties.get("my_absbearing"), String.valueOf(getAbsBearingDeg(b, e)));
+		data.put(properties.get("my_guntowardsennemy"), String.valueOf(((b.getHeading() + e.getBearing()) % 360) - b.getGunHeading()));//TODO Might need tests and/or simplifications.
 		
 		data.put(properties.get("shoot"), "unknown"); 
 		// we don't know for now if it will be missed or not. Almost all data should be set shoot or not_shoot before the end of the battle
-
-		data.put(properties.get("my_guntowardsennemy"), String.valueOf(((b.getHeading() + e.getBearing()) % 360) - b.getGunHeading()));//TODO Might need tests and/or simplifications.
 		
 		//Calculate temporal attributes
-		String[] values = {
-				"op_bearing",
-				"op_distance",
-				"op_energy",
-				"op_heading",
-				"op_velocity",
-				"my_distremain",
-				"my_energy",
-				"my_gunheading",
-				"my_gunheat",
-				"my_heading",
-				"my_x",
-				"my_y",
-				"op_x",
-				"op_y"
-				};
-		
-		LearnedData past = b.getDataFromPast(5);
-		
-		if(past != null) {
-			for(String val : values) {
-				setProperty("diff_"+val,
-						Double.toString(
-								Double.parseDouble(getValue(val))
-								- Double.parseDouble(past.getValue(val))
-								));
-			}
-		} else {
-			//Set attributes to null
-			for(String val : values) {
-				setProperty("diff_"+val, "0");
-			}
-		}
+		addTemporalAttributes(b, 5);
+		addTemporalAttributes(b, 2);
 	}
 	
 	
@@ -140,6 +111,52 @@ public class LearnedData {
 	private void setProperty(String name, String value) {
 		data.put(properties.get(name), value);
 	}
+	
+	/**
+	 * Adds difference between current attributes and attributes from "diff" rows in the past
+	 * @param b The robot
+	 * @param diff The difference offset
+	 */
+	private void addTemporalAttributes(LearningBot b, int diff) {
+		String[] values = {
+				"op_bearing",
+				"op_distance",
+				"op_energy",
+				"op_heading",
+				"op_velocity",
+				"my_distremain",
+				"my_energy",
+				"my_gunheading",
+				"my_gunheat",
+				"my_heading",
+				"my_x",
+				"my_y",
+				"op_x",
+				"op_y",
+				"dist_x",
+				"dist_y",
+				"dist",
+				"my_absbearing",
+				"my_guntowardsennemy"
+				};
+		
+		LearnedData past = b.getDataFromPast(diff);
+		
+		if(past != null) {
+			for(String val : values) {
+				setProperty("diff"+diff+"_"+val,
+						Double.toString(
+								Double.parseDouble(getValue(val))
+								- Double.parseDouble(past.getValue(val))
+								));
+			}
+		} else {
+			//Set attributes to null
+			for(String val : values) {
+				setProperty("diff"+diff+"_"+val, "0");
+			}
+		}
+	}
 
 //OTHER METHODS
 	/**
@@ -162,6 +179,10 @@ public class LearnedData {
 		properties.put("my_y", new BonzaiProperty(BonzaiProperty.INPUT_CONTINUOUS, "my_y"));
 		properties.put("op_x", new BonzaiProperty(BonzaiProperty.INPUT_CONTINUOUS, "op_x"));
 		properties.put("op_y", new BonzaiProperty(BonzaiProperty.INPUT_CONTINUOUS, "op_y"));
+		properties.put("dist_x", new BonzaiProperty(BonzaiProperty.INPUT_CONTINUOUS, "dist_x"));
+		properties.put("dist_y", new BonzaiProperty(BonzaiProperty.INPUT_CONTINUOUS, "dist_y"));
+		properties.put("dist", new BonzaiProperty(BonzaiProperty.INPUT_CONTINUOUS, "dist"));
+		properties.put("my_absbearing", new BonzaiProperty(BonzaiProperty.INPUT_CONTINUOUS, "my_absbearing"));
 		
 		properties.put("diff_op_bearing", new BonzaiProperty(BonzaiProperty.INPUT_CONTINUOUS, "diff_op_bearing"));
 		properties.put("diff_op_distance", new BonzaiProperty(BonzaiProperty.INPUT_CONTINUOUS, "diff_op_distance"));
@@ -177,6 +198,10 @@ public class LearnedData {
 		properties.put("diff_my_y", new BonzaiProperty(BonzaiProperty.INPUT_CONTINUOUS, "diff_my_y"));
 		properties.put("diff_op_x", new BonzaiProperty(BonzaiProperty.INPUT_CONTINUOUS, "diff_op_x"));
 		properties.put("diff_op_y", new BonzaiProperty(BonzaiProperty.INPUT_CONTINUOUS, "diff_op_y"));
+		properties.put("diff_dist_x", new BonzaiProperty(BonzaiProperty.INPUT_CONTINUOUS, "diff_dist_x"));
+		properties.put("diff_dist_y", new BonzaiProperty(BonzaiProperty.INPUT_CONTINUOUS, "diff_dist_y"));
+		properties.put("diff_dist", new BonzaiProperty(BonzaiProperty.INPUT_CONTINUOUS, "diff_dist"));
+		properties.put("diff_my_absbearing", new BonzaiProperty(BonzaiProperty.INPUT_CONTINUOUS, "diff_my_absbearing"));
 		
 		properties.put("shoot", new BonzaiProperty(BonzaiProperty.CLASS_LABEL, "shoot"));
 		properties.get("shoot").addValue("shoot");
@@ -310,57 +335,47 @@ public class LearnedData {
 		if (absBearingDeg < 0) absBearingDeg += 360;
 		return robot.getY() + Math.cos(Math.toRadians(absBearingDeg)) * e.getDistance();
 	}
-
+	
 	/**
-	 * Calculates the temporal attributes of data (relative direction, ...)
-	 * This method is called when all the data is available. 
-	 * @param knowledge The data
-	 * @return The data, with temporal attributes
+	 * Get absolute bearing
+	 * @param robot Our robot
+	 * @param e The event
+	 * @return The absolute bearing, in degrees
 	 */
-	public static List<LearnedData> calculateTemporalAttributes(List<LearnedData> knowledge) {
-		int diffTemporal = 5;
-		LearnedData current, next;
-		
-		String[] values = {
-				"op_bearing",
-				"op_distance",
-				"op_energy",
-				"op_heading",
-				"op_velocity",
-				"my_distremain",
-				"my_energy",
-				"my_gunheading",
-				"my_gunheat",
-				"my_heading",
-				"my_x",
-				"my_y",
-				"op_x",
-				"op_y"
-				};
-		
-		for(int i=0; i<knowledge.size()-diffTemporal; i++) {
-			current = knowledge.get(i);
-			next = knowledge.get(i+diffTemporal);
-			
-			//Calculates attributes
-			for(String val : values) {
-				current.setProperty("diff_"+val,
-						Double.toString(
-								Double.parseDouble(next.getValue(val))
-								- Double.parseDouble(current.getValue(val))
-								));
-			}
-		}
-		
-		for(int i=knowledge.size()-diffTemporal; i < knowledge.size(); i++) {
-			current = knowledge.get(i);
-			
-			//Set attributes to null
-			for(String val : values) {
-				current.setProperty("diff_"+val, "0");
-			}
-		}
-		
-		return knowledge;
+	private double getAbsBearingDeg(LearningBot robot, ScannedRobotEvent e) {
+		return robot.getHeading() + e.getBearing();
+	}
+	
+	/**
+	 * Get the distance between our robot and its opponent on X axis
+	 * @param robot Our robot
+	 * @param e The event
+	 * @return The distance on X
+	 */
+	private double getDistanceX(LearningBot robot, ScannedRobotEvent e) {
+		return Math.abs(robot.getX()-getEnnemyX(robot, e));
+	}
+	
+	/**
+	 * Get the distance between our robot and its opponent on Y axis
+	 * @param robot Our robot
+	 * @param e The event
+	 * @return The distance on Y
+	 */
+	private double getDistanceY(LearningBot robot, ScannedRobotEvent e) {
+		return Math.abs(robot.getY()-getEnnemyY(robot, e));
+	}
+	
+	/**
+	 * Get the distance between our robot and its opponent
+	 * @param robot Our robot
+	 * @param e The event
+	 * @return The distance
+	 */
+	private double getDistance(LearningBot robot, ScannedRobotEvent e) {
+		return Math.sqrt(
+				Math.pow(getDistanceX(robot, e), 2)
+				+ Math.pow(getDistanceY(robot, e), 2)
+				);
 	}
 }
