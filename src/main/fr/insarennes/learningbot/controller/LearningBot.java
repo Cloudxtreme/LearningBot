@@ -62,6 +62,11 @@ public class LearningBot extends SuperClass {
 	 */
 	private double previousTicksGunHeat;
 	
+	/**
+	 * The last index of data written in knowledge list
+	 */
+	private int lastWrittenDataId = -1;
+	
 //CONSTRUCTOR
 	/**
 	 * Class constructor
@@ -221,9 +226,7 @@ public class LearningBot extends SuperClass {
 	
 	@Override
 	public void onRoundEnded(RoundEndedEvent event) {
-//		writeDataInFile();
-//		nextDataToSet = 0;
-//		knowledge.clear();
+		writeDataInFile();
 		nextDataToSet = knowledge.size(); // If there are bullets still in the air, the next data to set must be one of the next round
 		super.onRoundEnded(event);
 	}
@@ -337,11 +340,15 @@ public class LearningBot extends SuperClass {
 	}
 	
 	private void writeDataInFile() {
-		if(knowledge.size() > 0) {
+		if(knowledge.size() - (lastWrittenDataId + 1) > 0) {
 			//Save data in filesystem
 			LearnedDataWriter ldw = new LearnedDataWriter();
 			try {
-				ldw.write(knowledge, getDataFile("learningbot.data"), getDataFile("learningbot.names"));
+				ldw.write(
+						knowledge.subList(lastWrittenDataId+1, knowledge.size()-1),
+						getDataFile("learningbot.data"),
+						getDataFile("learningbot.names"));
+				lastWrittenDataId = knowledge.size() - 1;
 			} catch (IOException e1) {
 				e1.printStackTrace();
 				System.err.println("Failed to save collected data.");

@@ -1,8 +1,8 @@
 package fr.insarennes.learningbot.model;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import robocode.ScannedRobotEvent;
 import fr.insarennes.learningbot.controller.LearningBot;
@@ -29,16 +29,14 @@ public class LearnedData {
 	 * @param e The ennemy robot
 	 */
 	public LearnedData(LearningBot b, ScannedRobotEvent e) {
-		if(properties == null) { 
-			initProperties();
-		}
+		initProperties();
 
 		data = new HashMap<BonzaiProperty,String>();
 		data.put(properties.get("op_bearing"), String.valueOf(e.getBearing())); // not sure if useful
 		data.put(properties.get("op_distance"), String.valueOf(e.getDistance()));
 		data.put(properties.get("op_energy"), String.valueOf(e.getEnergy()));
 		data.put(properties.get("op_heading"), String.valueOf(e.getHeading()));
-//		data.put(properties.get("op_name"), String.valueOf(e.getName()));
+		data.put(properties.get("op_name"), String.valueOf(e.getName()));
 		data.put(properties.get("op_velocity"), String.valueOf(e.getVelocity()));
 		data.put(properties.get("my_distremain"), String.valueOf(b.getDistanceRemaining()));
 		data.put(properties.get("my_energy"), String.valueOf(b.getEnergy()));
@@ -68,8 +66,8 @@ public class LearnedData {
 	/**
 	 * @return The properties
 	 */
-	public Set<BonzaiProperty> getProperties() {
-		return data.keySet();
+	public Collection<BonzaiProperty> getProperties() {
+		return properties.values();
 	}
 	
 	/**
@@ -142,20 +140,19 @@ public class LearnedData {
 		
 		LearnedData past = b.getDataFromPast(diff);
 		
-		if(past != null) {
-			for(String val : values) {
+		for(String val : values) {
+			properties.put("diff"+diff+"_"+val, new BonzaiProperty(BonzaiProperty.INPUT_CONTINUOUS, "diff"+diff+"_"+val));
+			if(past != null) {
 				setProperty("diff"+diff+"_"+val,
 						Double.toString(
 								Double.parseDouble(getValue(val))
 								- Double.parseDouble(past.getValue(val))
 								));
 			}
-		} else {
-			//Set attributes to null
-			for(String val : values) {
+			else {
 				setProperty("diff"+diff+"_"+val, "0");
 			}
-		}
+		} 
 	}
 
 //OTHER METHODS
@@ -183,25 +180,6 @@ public class LearnedData {
 		properties.put("dist_y", new BonzaiProperty(BonzaiProperty.INPUT_CONTINUOUS, "dist_y"));
 		properties.put("dist", new BonzaiProperty(BonzaiProperty.INPUT_CONTINUOUS, "dist"));
 		properties.put("my_absbearing", new BonzaiProperty(BonzaiProperty.INPUT_CONTINUOUS, "my_absbearing"));
-		
-		properties.put("diff_op_bearing", new BonzaiProperty(BonzaiProperty.INPUT_CONTINUOUS, "diff_op_bearing"));
-		properties.put("diff_op_distance", new BonzaiProperty(BonzaiProperty.INPUT_CONTINUOUS, "diff_op_distance"));
-		properties.put("diff_op_energy", new BonzaiProperty(BonzaiProperty.INPUT_CONTINUOUS, "diff_op_energy"));
-		properties.put("diff_op_velocity", new BonzaiProperty(BonzaiProperty.INPUT_CONTINUOUS, "diff_op_velocity"));
-		properties.put("diff_my_energy", new BonzaiProperty(BonzaiProperty.INPUT_CONTINUOUS, "diff_my_energy"));
-		properties.put("diff_op_heading", new BonzaiProperty(BonzaiProperty.INPUT_CONTINUOUS, "diff_op_heading"));
-		properties.put("diff_my_distremain", new BonzaiProperty(BonzaiProperty.INPUT_CONTINUOUS, "diff_my_distremain"));
-		properties.put("diff_my_gunheading", new BonzaiProperty(BonzaiProperty.INPUT_CONTINUOUS, "diff_my_gunheading"));
-		properties.put("diff_my_heading", new BonzaiProperty(BonzaiProperty.INPUT_CONTINUOUS, "diff_my_heading"));
-		properties.put("diff_my_gunheat", new BonzaiProperty(BonzaiProperty.INPUT_CONTINUOUS, "diff_my_gunheat"));
-		properties.put("diff_my_x", new BonzaiProperty(BonzaiProperty.INPUT_CONTINUOUS, "diff_my_x"));
-		properties.put("diff_my_y", new BonzaiProperty(BonzaiProperty.INPUT_CONTINUOUS, "diff_my_y"));
-		properties.put("diff_op_x", new BonzaiProperty(BonzaiProperty.INPUT_CONTINUOUS, "diff_op_x"));
-		properties.put("diff_op_y", new BonzaiProperty(BonzaiProperty.INPUT_CONTINUOUS, "diff_op_y"));
-		properties.put("diff_dist_x", new BonzaiProperty(BonzaiProperty.INPUT_CONTINUOUS, "diff_dist_x"));
-		properties.put("diff_dist_y", new BonzaiProperty(BonzaiProperty.INPUT_CONTINUOUS, "diff_dist_y"));
-		properties.put("diff_dist", new BonzaiProperty(BonzaiProperty.INPUT_CONTINUOUS, "diff_dist"));
-		properties.put("diff_my_absbearing", new BonzaiProperty(BonzaiProperty.INPUT_CONTINUOUS, "diff_my_absbearing"));
 		
 		properties.put("shoot", new BonzaiProperty(BonzaiProperty.CLASS_LABEL, "shoot"));
 		properties.get("shoot").addValue("shoot");

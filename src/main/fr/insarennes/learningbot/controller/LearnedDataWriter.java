@@ -3,21 +3,14 @@ package fr.insarennes.learningbot.controller;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import robocode.RobocodeFileWriter;
 import fr.insarennes.learningbot.model.BonzaiProperty;
 import fr.insarennes.learningbot.model.LearnedData;
 
 public class LearnedDataWriter {
-//CONSTANTS
-	/** The properties which should not be written in text file **/
-	private static String[] IGNORE_PROPS = { /*"my_x", "my_y", "my_gunheading"*/ };
-	/** The properties which should not be written in text file, as a list **/
-	private static List<String> IGNORE_PROPS_LIST = Arrays.asList(IGNORE_PROPS);
-
 //OTHER METHODS
 	/**
 	 * Saves a lot of data in a file
@@ -36,20 +29,11 @@ public class LearnedDataWriter {
 			names.delete();
 		}
 		
-		if(datas.exists()) {
-			datas.delete();
-		}
+//		if(datas.exists()) {
+//			datas.delete();
+//		}
 		
-		Set<BonzaiProperty> properties = data.get(0).getProperties();
-		
-		//Remove ignored properties
-		List<BonzaiProperty> toRemove = new ArrayList<BonzaiProperty>();
-		for(BonzaiProperty bp : properties) {
-			if(IGNORE_PROPS_LIST.contains(bp.getName())) {
-				toRemove.add(bp);
-			}
-		}
-		properties.removeAll(toRemove);
+		Collection<BonzaiProperty> properties = data.get(0).getProperties();
 		
 		/*
 		 * .names file
