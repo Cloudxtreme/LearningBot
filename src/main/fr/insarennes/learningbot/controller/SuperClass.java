@@ -17,20 +17,28 @@ see license here:  http://robowiki.net/wiki/RWPCL
 
 package fr.insarennes.learningbot.controller;
 
-import robocode.*;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import robocode.AdvancedRobot;
+import robocode.BulletHitEvent;
+import robocode.Condition;
+import robocode.DeathEvent;
+import robocode.HitByBulletEvent;
+import robocode.ScannedRobotEvent;
+import robocode.StatusEvent;
 import robocode.util.Utils;
-import java.awt.geom.*;     
-import java.lang.*;         
-import java.util.ArrayList; 
-import java.awt.*;
-import java.util.*;
 
 
 /**
  * Intended to be extended by LearningBot when switching its behavior
- * to other robots'.
+ * to other robots'. Just a neat class to be a little  quicker.
+ * The normal way for LearningBot is to directly extend the robot.
  * You may copy-paste code of open-source robots here until finding
  * the perfect one. Then make LearningBot extends that one.
+ * Beware, ctrl+A ctrl+v will erase the lines you are reading right now.
  * 
  * Available robots at http://www.robocoderepository.com
  * @author charles

@@ -26,6 +26,7 @@ import fr.insarennes.learningbot.model.LearnedData;
 /**
  * A robot based on an existing one, however this one will improve itself over time,
  * by building and following a decision tree.
+ * Must extend an operational robot extending AdvancedRobot
  */
 
 public class LearningBot extends SuperClass {
@@ -211,10 +212,8 @@ public class LearningBot extends SuperClass {
 	@Override
 	public void onBattleEnded(BattleEndedEvent e) {
 //		System.err.println("Data that will be written : "); for (LearnedData i : knowledge) System.err.println(i.getValue("shoot"));//FIXME
-
-		writeDataInFile();
 		
-		LearningBot.nextDataToSet = 0; // In case another battle would start
+		LearningBot.nextDataToSet = 0; // In case another battle would start, not sure if Robocode reloads everything
 		
 		super.onBattleEnded(e);
 	}
@@ -222,6 +221,7 @@ public class LearningBot extends SuperClass {
 	@Override
 	public void onSkippedTurn(SkippedTurnEvent e) {
 		System.err.println("Taking too long to compute stuff, another turn was skipped :(");
+		super.onSkippedTurn(e);
 	} 
 	
 	@Override
